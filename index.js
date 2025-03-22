@@ -147,7 +147,21 @@ class Tree {
 
   // Return the node from the tree with the given value
   find(value) {
-    console.log(value);
+    let currNode = this.root;
+
+    // Traverse the tree until the node is found, or until it reaches the leaf
+    while (currNode && currNode.data !== value) {
+      currNode = value < currNode.data ? currNode.left : currNode.right;
+    }
+
+    // Log error, if not found
+    if (!currNode) {
+      console.error("No node was found with that value!");
+      return false;
+    }
+
+    // Return the found node
+    return currNode;
   }
 }
 
@@ -174,7 +188,7 @@ tree.insert(15);
 tree.insert(20);
 tree.insert(6);
 
-tree.find(23);
+console.log(tree.find(4));
 
 //tree.deleteItem(1);
 
