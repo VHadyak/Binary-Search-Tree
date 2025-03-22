@@ -88,7 +88,6 @@ class Tree {
             this.root = null;
             return this.root;
           }
-
           // Set leaf node to null
           if (parent.left === currNode) {
             parent.left = null;
@@ -97,7 +96,14 @@ class Tree {
           }
         }
         // NODE HAS 1 CHILD CASE
-        else if (currNode.left === null) {
+        else if (currNode === this.root) {
+          // Check if root is deleted with 1 child
+          if (currNode.left === null) {
+            this.root = currNode.right;
+          } else {
+            this.root = currNode.left;
+          }
+        } else if (currNode.left === null) {
           // Node has no left child, link right child to parent
           if (parent.left === currNode) {
             parent.left = currNode.right;
@@ -122,7 +128,6 @@ class Tree {
             parent = successor;
             successor = successor.left;
           }
-
           // Replace node to be deleted data with successor's data
           currNode.data = successor.data;
 
@@ -138,6 +143,11 @@ class Tree {
     }
     console.error("No node was found with that value in the tree!");
     return this.root;
+  }
+
+  // Return the node from the tree with the given value
+  find(value) {
+    console.log(value);
   }
 }
 
@@ -164,7 +174,9 @@ tree.insert(15);
 tree.insert(20);
 tree.insert(6);
 
-//tree.deleteItem(4);
+tree.find(23);
+
+//tree.deleteItem(1);
 
 //console.log(tree.root);
 prettyPrint(tree.root);
