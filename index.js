@@ -163,6 +163,30 @@ class Tree {
     // Return the found node
     return currNode;
   }
+
+  // Traverse the tree in breadth-first level order (queue)
+  levelOrder(callback) {
+    if (this.root === null) return;
+
+    const queue = [];
+    queue.push(this.root); // Add root node to the queue
+
+    // If the queue is not empty
+    while (queue.length > 0) {
+      let currNode = queue.shift(); // Remove first node
+
+      callback(currNode); // Log the node that is being processed
+
+      // If current node has a left child, add it to the queue
+      if (currNode.left !== null) {
+        queue.push(currNode.left);
+      }
+      // If current node has a right child, add it to the queue
+      if (currNode.right !== null) {
+        queue.push(currNode.right);
+      }
+    }
+  }
 }
 
 // Visual Binary Search Tree
@@ -188,8 +212,8 @@ tree.insert(15);
 tree.insert(20);
 tree.insert(6);
 
-console.log(tree.find(4));
-
+//tree.levelOrder((node) => console.log(node.data));
+//console.log(tree.find(4));
 //tree.deleteItem(1);
 
 //console.log(tree.root);
