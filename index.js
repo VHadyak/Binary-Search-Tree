@@ -167,6 +167,7 @@ class Tree {
   // Traverse the tree in breadth-first level order (queue)
   levelOrder(callback) {
     if (this.root === null) return;
+    if (!callback) throw Error("Callback is required!");
 
     const queue = [];
     queue.push(this.root); // Add root node to the queue
@@ -187,6 +188,85 @@ class Tree {
       }
     }
   }
+
+  // Traverse the tree in depth-first order (stack)
+  // In-order tree traversal
+  inOrder(callback) {
+    // left subtree > root > right subtree
+    if (this.root === null) return;
+    if (!callback) throw Error("Callback is required");
+
+    const stack = []; // Simulate recursive call stack
+    let currNode = this.root;
+
+    while (stack.length || currNode) {
+      while (currNode) {
+        // Traverse left subtree first
+        stack.push(currNode); // Add nodes to the stack while traversing left
+        currNode = currNode.left;
+      }
+      let lastNode = stack.pop(); // Remove root of current subtree from the stack
+      callback(lastNode); // Log the processed node
+
+      // After processing the root node, move to right subtree
+      currNode = lastNode.right;
+    }
+  }
+
+  // Pre-order tree reversal
+  preOrder(callback) {
+    // root > left subtree > right subtree
+    if (this.root === null) return;
+    if (!callback) throw Error("Callback is required");
+
+    const stack = [];
+    stack.push(this.root);
+
+    while (stack.length > 0) {
+      let currNode = stack.pop();
+      callback(currNode);
+
+      // Add right subtree nodes first, so left subtree nodes can be processed first
+      if (currNode.right !== null) {
+        stack.push(currNode.right);
+      }
+
+      if (currNode.left !== null) {
+        stack.push(currNode.left);
+      }
+    }
+  }
+
+  // Post-order tree reversal
+  postOrder(callback) {
+    // left subtree > right subtree > root
+    if (this.root === null) return;
+    if (!callback) throw Error("Callback is required");
+
+    const stack = []; // stack for reversing the order
+    const tempStack = [this.root]; // stack for adding nodes
+
+    while (tempStack.length) {
+      let currNode = tempStack.pop();
+
+      stack.push(currNode);
+
+      // Add left child first, followed by right child to the tempStack
+      // The last node pushed to tempStack, will be first processed node in in the stack
+      if (currNode.left !== null) {
+        tempStack.push(currNode.left);
+      }
+
+      if (currNode.right !== null) {
+        tempStack.push(currNode.right);
+      }
+    }
+
+    // Reverse the stack so root node displayed last
+    stack.reverse().forEach((node) => {
+      callback(node);
+    });
+  }
 }
 
 // Visual Binary Search Tree
@@ -203,16 +283,14 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-const array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-// Sorted and deduplicated array: [1, 3, 4, 5, 7, 8, 9, 23, 67, 324, 6345]
+const array = [5, 3, 2, 4, 9, 8, 10];
 
 let tree = new Tree(array);
 
-tree.insert(15);
-tree.insert(20);
-tree.insert(6);
-
 //tree.levelOrder((node) => console.log(node.data));
+//tree.inOrder((node) => console.log(node.data));
+//tree.preOrder((node) => console.log(node.data));
+//tree.postOrder((node) => console.log(node.data));
 //console.log(tree.find(4));
 //tree.deleteItem(1);
 
