@@ -267,6 +267,48 @@ class Tree {
       callback(node);
     });
   }
+
+  // Return node's height
+  height(node) {
+    // Find the node based on value
+    if (typeof node === "number") {
+      node = this.find(node);
+    }
+
+    // Base case if no node found
+    if (node === null || node === false) return -1;
+
+    // Recursively call left and right subtrees
+    let leftSubtree = this.height(node.left);
+    let rightSubtree = this.height(node.right);
+
+    // Get height of the taller subtree
+    return Math.max(leftSubtree, rightSubtree) + 1;
+  }
+
+  // Return node's depth
+  depth(node) {
+    let level = 1;
+    let currNode = this.root;
+
+    // Find the node in the tree
+    if (typeof node === "number") {
+      node = this.find(node);
+    }
+
+    while (currNode) {
+      // If node found during traversal, return depth of that node
+      if (currNode === node) return level;
+      // Else keep traversing down the tree
+      currNode = node.data < currNode.data ? currNode.left : currNode.right;
+
+      level++; // Add depth level while traversing down
+    }
+    return -1; // If node not found
+  }
+
+  // Check if tree is balanced
+  isBalanced() {}
 }
 
 // Visual Binary Search Tree
@@ -283,7 +325,7 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-const array = [5, 3, 2, 4, 9, 8, 10];
+const array = [5, 3, 2, 4, 9, 8, 10, 12];
 
 let tree = new Tree(array);
 
@@ -291,8 +333,11 @@ let tree = new Tree(array);
 //tree.inOrder((node) => console.log(node.data));
 //tree.preOrder((node) => console.log(node.data));
 //tree.postOrder((node) => console.log(node.data));
+//console.log(tree.height(12));
+//console.log(tree.depth(5));
 //console.log(tree.find(4));
 //tree.deleteItem(1);
+tree.isBalanced();
 
 //console.log(tree.root);
 prettyPrint(tree.root);
