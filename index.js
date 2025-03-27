@@ -6,7 +6,7 @@ class Node {
   }
 }
 
-class Tree {
+export class Tree {
   constructor(arr) {
     this.arr = [...new Set(arr)].sort((a, b) => a - b); // Remove the duplicates, and sort the array
     this.root = this.buildTree(this.arr); // Get root of a tree
@@ -332,7 +332,7 @@ class Tree {
 }
 
 // Visual Binary Search Tree
-const prettyPrint = (node, prefix = "", isLeft = true) => {
+export const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
     return;
   }
@@ -344,18 +344,3 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
   }
 };
-
-const array = [5, 15, 7, 20, 17, 25];
-
-let tree = new Tree(array);
-
-//tree.levelOrder((node) => console.log(node.data));
-//tree.inOrder((node) => console.log(node.data));
-//tree.preOrder((node) => console.log(node.data));
-//tree.postOrder((node) => console.log(node.data));
-//console.log(tree.height(12));
-//console.log(tree.depth(15));
-//console.log(tree.find(4));
-//tree.deleteItem(1);
-
-prettyPrint(tree.root);
