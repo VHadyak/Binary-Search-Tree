@@ -66,82 +66,61 @@ class Tree {
 
   // Delete the node of the given value from the tree
   deleteItem(value) {
-    let currNode = this.root;
-    let parent = null;
-    let successor = null;
-
-    // if the tree is empty, return null
-    if (currNode === null) return null;
-
-    while (currNode) {
-      if (value < currNode.data) {
-        parent = currNode;
-        currNode = currNode.left;
-      } else if (value > currNode.data) {
-        parent = currNode;
-        currNode = currNode.right;
-      } else {
-        // LEAF NODE CASE
-        if (currNode.left === null && currNode.right === null) {
-          // If the tree only had one node, return root of null after deletion
-          if (parent === null) {
-            this.root = null;
-            return this.root;
-          }
-          // Set leaf node to null
-          if (parent.left === currNode) {
-            parent.left = null;
-          } else {
-            parent.right = null;
-          }
-        }
-        // NODE HAS 1 CHILD CASE
-        else if (currNode === this.root) {
-          // Check if root is deleted with 1 child
-          if (currNode.left === null) {
-            this.root = currNode.right;
-          } else {
-            this.root = currNode.left;
-          }
-        } else if (currNode.left === null) {
-          // Node has no left child, link right child to parent
-          if (parent.left === currNode) {
-            parent.left = currNode.right;
-          } else {
-            parent.right = currNode.right;
-          }
-        } else if (currNode.right === null) {
-          // Node has no right child, link left child to parent
-          if (parent.left === currNode) {
-            parent.left = currNode.left;
-          } else {
-            parent.right = currNode.left;
-          }
-        }
-        // NODE HAS 2 CHILDREN CASE
-        else {
-          parent = currNode;
-          successor = currNode.right;
-
-          // Find leftmost node in right subtree
-          while (successor.left) {
-            parent = successor;
-            successor = successor.left;
-          }
-          // Replace node to be deleted data with successor's data
-          currNode.data = successor.data;
-
-          // If successor has a right child, link right child to the parent of the successor
-          if (parent.left === successor) {
-            parent.left = successor.right;
-          } else {
-            parent.right = successor.right;
-          }
-        }
-        return this.root;
-      }
+    if (this.root === null) {
+      console.error("Tree is empty!");
+      return null;
     }
-    console.error("No node was found with that value in the tree!");
+
+    if (!value) {
+      console.error("Enter a value of a node!");
+      return;
+    }
+
+    // Find the node, and delete it
+    const deleteNode = (node) => {
+      if (node === null) {
+        console.error("No node was found with that value!");
+        return null;
+      }
+
+      if (value < node.data) {
+        node.left = deleteNode(node.left); // Traverse through left subtree
+      } else if (value > node.data) {
+        node.right = deleteNode(node.right); // Traverse through right subtree
+      } else {
+        // LEAF NODE CASE: If the node has no children, return null to delete the node
+        if (node.left === null && node.right === null) return null;
+
+        // SINGLE CHILD CASE: If node has right child only, replace the node with its right child
+        // Otherwise, if node has left child only, replace the node with its left child
+        if (node.left === null) return node.right;
+        if (node.right === null) return node.left;
+
+        // 2 CHILDREN CASE
+        let parent = node;
+        let successor = node.right;
+
+        // Find leftmost node in right subtree (smallest value)
+        while (successor.left) {
+          parent = successor;
+          successor = successor.left;
+        }
+
+        // Replace node to be deleted data with successor's data
+        node.data = successor.data;
+
+        // If successor has a right child, link right child to the parent of the successor
+        if (parent.left === successor) {
+          parent.left = successor.right;
+        } else {
+          parent.right = successor.right;
+        }
+      }
+      return node;
+    };
+
+    // Start deletion process and update the root, if the root node was deleted
+    this.root = deleteNode(this.root);
     return this.root;
   }
 
@@ -291,6 +270,11 @@ class Tree {
     let level = 1;
     let currNode = this.root;
 
+    if (!node) {
+      console.error("Enter a value of the node!");
+      return null;
+    }
+
     // Find the node in the tree
     if (typeof node === "number") {
       node = this.find(node);
@@ -308,7 +292,43 @@ class Tree {
   }
 
   // Check if tree is balanced
-  isBalanced() {}
+  isBalanced() {
+    if (!this.root) return true; // If tree is empty, then its balanced
+    let node = this.root;
+
+    // Get height of each node to check if the tree is balanced or not
+    const getHeight = (node) => {
+      if (node === null) return 0; // Height of empty subtree
+
+      let leftSubtree = getHeight(node.left);
+      let rightSubtree = getHeight(node.right);
+
+      // If either subtree is unbalanced or height difference > 1, then its unbalanced
+      if (leftSubtree === -1 || rightSubtree === -1 || Math.abs(leftSubtree - rightSubtree) > 1) {
+        return -1;
+      }
+      // If balanced, return the height of current node
+      return Math.max(leftSubtree, rightSubtree) + 1;
+    };
+    return getHeight(node) !== -1; // Return boolean if tree is balanced or not
+  }
+
+  // Rebalance an unbalanced tree
+  rebalance() {
+    // Only rebalance it if the tree is not balanced
+    if (!this.isBalanced()) {
+      const sortedArr = [];
+
+      // In-order traversal to get sorted node values
+      this.inOrder((node) => {
+        sortedArr.push(node.data);
+      });
+
+      // Rebuild the tree with sorted array, and update the root of the tree
+      this.root = this.buildTree(sortedArr);
+    }
+    return this.root;
+  }
 }
 
 // Visual Binary Search Tree
@@ -325,7 +345,7 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 
-const array = [5, 3, 2, 4, 9, 8, 10, 12];
+const array = [5, 15, 7, 20, 17, 25];
 
 let tree = new Tree(array);
 
@@ -334,10 +354,8 @@ let tree = new Tree(array);
 //tree.preOrder((node) => console.log(node.data));
 //tree.postOrder((node) => console.log(node.data));
 //console.log(tree.height(12));
-//console.log(tree.depth(5));
+//console.log(tree.depth(15));
 //console.log(tree.find(4));
 //tree.deleteItem(1);
-tree.isBalanced();
 
-//console.log(tree.root);
 prettyPrint(tree.root);
